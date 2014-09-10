@@ -222,7 +222,7 @@ int minDistance(string word1, string word2) {
 
     		//}
     		//int replace = dist[i-1][j-1] + (word1[i] == word2[j]);
-    		dist[i][j] = min(insert1, min(insert2,replace));
+    		dist[i][j] = min(insert1, min(insert2,replace));	
     	}
     }
 
@@ -230,16 +230,178 @@ int minDistance(string word1, string word2) {
 
 }
 
+void connect1(TreeLinkNode *root){
+	if(!root) {return;}
+	TreeLinkNode *lasthead = root;
+	TreeLinkNode *currhead = NULL;
+	TreeLinkNode *prev = NULL;
+	while(lasthead != NULL){
+		TreeLinkNode *vqueue = lasthead;
+		// currhead = lasthead;
+		while(vqueue != NULL){
+			if(vqueue -> left) {
+				if(!currhead) {
+					currhead = vqueue -> left;
+					prev = currhead;
+				}
+				else{
+					prev -> next = vqueue -> left;
+					prev = prev -> next;
+				}
+			}
+
+			if(vqueue -> right) {
+				if(!currhead){
+					currhead = vqueue -> right;
+					prev = currhead;
+				}
+				else{
+					prev -> next = vqueue -> right;
+					prev = prev -> next;
+				}
+			}
+			vqueue = vqueue -> next;
+		}
+		lasthead = currhead;
+		currhead = NULL;
+	}	
+
+}
 void connect(TreeLinkNode *root) {
 	if(!root) {return;}
-	if(root -> left == NULL && root -> right == NULL) {return;}
-	return;
+	TreeLinkNode *lasthead = root;
+	TreeLinkNode *currhead = NULL;
+	TreeLinkNode *prev = NULL;
+	while(lasthead != NULL){
+		TreeLinkNode *vqueue = lasthead;
+		// currhead = lasthead;
+		while(vqueue != NULL){
+			if(vqueue -> left) {
+				if(!currhead) {
+					currhead = vqueue -> left;
+					prev = currhead;
+				}
+				else{
+					prev -> next = vqueue -> left;
+					prev = prev -> next;
+				}
+			}
+
+			if(vqueue -> right) {
+				if(!currhead){
+					currhead = vqueue -> right;
+					prev = currhead;
+				}
+				else{
+					prev -> next = vqueue -> right;
+					prev = prev -> next;
+				}
+			}
+			vqueue = vqueue -> next;
+		}
+		lasthead = currhead;
+		currhead = NULL;
+	}	
+}
+
+ListNode *partition(ListNode *head, int x) {
+	if(!head) return head;
+	ListNode *small = new ListNode (0);
+	ListNode *s = small;
+	ListNode *great = new ListNode (0);
+	ListNode *g = great;
+	ListNode *h = head;
+	while(h != NULL){
+		//cout << "partitioning one integer" << endl;
+		if(h -> val < x) {
+			s -> next = h; 
+			s = s -> next;
+		}
+		else {
+			g -> next = h;
+			g = g -> next;
+		}
+		h = h -> next;
+	}
+	g -> next = NULL;
+	s -> next = great -> next;
+	return small -> next;
+	// return small;
+}
+
+vector<vector<int>> generateMatrix(int n) {
+	vector<vector<int>> matr (n, vector<int> (n));
+	int count = 1;
+	int row = 0;
+	int col = 0;
+
+	for(int cycle = 0; cycle < n; cycle ++){
+
+		for(col = cycle; col < n - cycle; col ++){
+			matr[cycle][col] = count++; 
+		}
+		for(row = cycle+1; row < n - cycle; row ++){
+			matr[row][n - cycle -1] = count++;
+		}
+		for(col = n - cycle - 2; col >= cycle; col--){
+			matr[n - cycle - 1][col] = count++;
+		}
+		for(row = n - cycle - 2; row > cycle; row--){
+			matr[row][cycle] = count++;
+		}
+
+
+	}
+	return matr;
+}
+
+int minimumTotal(vector<vector<int> > &triangle) {
+	int level = triangle.size();
+	if(level == 0) {return 0;}
+	if(level == 1) {return triangle[0][0];}
+	for(int i = level-2; i >= 0; i--){
+		int length = triangle[i].size();
+		for(int j = 0; j < length; j++){
+			triangle[i][j] += min(triangle[i+1][j],triangle[i+1][j+1]);
+		}
+	}	
+	return triangle[0][0];    
+}
+
+TreeNode *ipreordertoTree(vector<int> &preorder, vector<int> &inorder, int instart, int inend, int prestart, int preend){
+	if(instart + 1 > inend || prestart + 1 > preend) {return NULL;}
+	TreeNode *root = new TreeNode(preorder[prestart]);
+	cout << "building node " << preorder[prestart] << endl;
+
+	int index = instart; 
+	while(inorder[index] != preorder[prestart]) {
+		index++;
+	}
+
+	root -> left = ipreordertoTree(preorder, inorder, instart, index, prestart + 1, prestart + index - instart + 1);
+	root -> right = ipreordertoTree(preorder, inorder, index + 1, inend, prestart + index - instart + 1, preend);
+
+
+
+	return root;
+
+}
+TreeNode *buildTreeIPre(vector<int> &preorder, vector<int> &inorder) {
+	int length = preorder.size();
+	return ipreordertoTree(preorder, inorder, 0, length, 0, length);    
 }
 
 int main(int argc, char* argv[])
 {
- //	solveNQueens(4);
+	vector<int> postorder = {1,3,5,4,2,8,9,7,6};
+	vector<int> preorder = {6,2,1,4,3,5,7,9,8};
+	vector<int> inorder = {1,2,3,4,5,6,7,8,9};
+	TreeNode *newTree = buildTree(inorder, postorder);
+	TreeNode *newTree2 = buildTreeIPre(preorder, inorder);
 
+ //	solveNQueens(4);
+	vector<vector<int>> matr = generateMatrix(5);
+	printmatrix(matr);
 	string cat = "caa";
 	string caf = "cab";
 	cout << minDistance(cat,caf) << endl;
@@ -358,17 +520,24 @@ int main(int argc, char* argv[])
 //	printf("%i \n", numTrees(4));
 //	printf("End of program\n");
 	ListNode *lNode_1 = new ListNode(1);
-	ListNode *lNode_2 = new ListNode(3);
+	ListNode *lNode_2 = new ListNode(4);
 	ListNode *lNode_3 = new ListNode(3);
-	ListNode *lNode_4 = new ListNode(4);
+	ListNode *lNode_4 = new ListNode(2);
 	ListNode *lNode_5 = new ListNode(5);
-	ListNode *lNode_6 = new ListNode(6);
+	ListNode *lNode_6 = new ListNode(2);
 
 	lNode_1 -> next = lNode_2;
-	//lNode_2 -> next = lNode_3;
+	lNode_2 -> next = lNode_3;
 	lNode_3 -> next = lNode_4;
 	lNode_4 -> next = lNode_5;
 	lNode_5 -> next = lNode_6;
+
+	printList(lNode_1);
+	ListNode *t2 = partition(lNode_1,3);
+	printList(t2);
+	//vector<int> t2res = preorderTraversal(t2);
+	//printvector(t2res);
+
 
 	TreeNode *t1 = sortedListToBST(lNode_1);
 	vector<int> t1res = preorderTraversal(t1);

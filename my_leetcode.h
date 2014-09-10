@@ -53,6 +53,38 @@ int reverse(int x) {
     return (int)ret;
 }
 
+TreeNode *ipostordertoTree(vector<int> &inorder, vector<int> &postorder, int inend, int instart, int postend, int poststart){
+	if(instart + 1 > inend || poststart + 1 > postend) {return NULL;}
+
+
+
+	//cout << "building node " << postorder[postend - 1] << endl;
+
+	// if(instart == inend) {
+	// 	TreeNode * root = new TreeNode(postorder[postend]);
+	// 	//cout << "instart is " << instart << " inend is " << inend << endl;
+	// 	return root; 
+	// }
+
+	TreeNode *root = new TreeNode(postorder[postend - 1]);
+	
+	int index = instart; 
+	while(inorder[index] != postorder[postend - 1]) {
+		index++;
+	}
+//	cout << "instart is " << instart << " index is " << index << " inend is " << inend << endl;
+	root -> left = ipostordertoTree(inorder,postorder, index, instart, poststart + index - instart, poststart);
+	root -> right = ipostordertoTree(inorder, postorder, inend , index + 1, postend - 1, poststart + index  - instart);
+
+	return root;
+}
+
+TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder) {
+	int length = postorder.size();
+	//TreeNode *root = new TreeNode(postorder[length -1]);
+	return ipostordertoTree(inorder,postorder,length, 0, length , 0);    
+}
+
 bool searchMatrix(vector<vector<int> > &matrix, int target) {
     if(matrix.size() == 0) {return 0;}
     if(target < matrix[0][0]) {return 0;}
