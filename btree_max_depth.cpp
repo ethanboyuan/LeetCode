@@ -16,362 +16,10 @@
 
 using namespace std;
 
-
-TreeNode* sortedListToBSThelper(ListNode *& list, int start, int end) {
-  if (start > end) return NULL;
-  // same as (start+end)/2, avoids overflow
-  int mid = start + (end - start) / 2;
-  TreeNode *leftChild = sortedListToBSThelper(list, start, mid-1);
-  TreeNode *parent = new TreeNode(list->val);
-  //cout << "Current node being added: " << list -> val << endl;
-  parent->left = leftChild;
-  list = list->next;
-  parent->right = sortedListToBSThelper(list, mid+1, end);
-  return parent;
-}
-
-TreeNode *sortedListToBST(ListNode *head) {
-	return sortedListToBSThelper(head, 0, ListLength(head) - 1);
-}
-
-int threeSumClosest(vector<int> &num, int target) {
-	sort(num.begin(), num.end());
-	int n = num.size();
-	if(n < 3) {return 0;}
-	int closest = target;
-	int sum = num[0] + num[1] + num[2];
-	for(int i = 0; i <  n - 2; i++){
-		int a = num[i];
-		int k = i + 1;
-		int l = n - 1;
-		while(k < l){
-			int b = num[k];
-			int c = num[l];
-			if(abs(a + b + c  - target) <= abs(closest)) {closest = ( a + b + c ) - target; sum = a + b + c;}
-			
-			if(a + b + c == target) {return target;}
-			else if(a + b + c > target) {l--;}
-			else {k++;}
-			//cout << "a = " << a << "b = " << b << "c = " << c  << " closest = " << closest << endl;
-		}
-	}
-	return sum;
-}
-
-bool canJump(int A[], int n) {
-	int canReach = 0;
-	for(int i = 0; i <= canReach && i < n; i++){
-		if(A[i] + i > canReach) {canReach = A[i] + i;}
-		if(canReach >= n - 1) {return 1;}
-	} 
-	return (canReach >= n - 1);
-
-}
-
-bool searchRotatedDub(int A[], int n, int target) {
-	int left = 0, right = n - 1;
-	while(left <= right){
-		int mid = left + (right - left) / 2;
-		if(A[mid] == target) {return 1;}
-		if(A[left] < A[mid]) {
-			if(target < A[mid] && target >= A[left]){
-				right = mid - 1;
-			}
-			else{
-				left = mid + 1;
-			}
-		}
-		else if(A[left] > A[mid]){
-			if(target > A[mid] && target <= A[right]){
-				left = mid + 1;
-			}
-			else {
-				right = mid - 1;
-			}
-		}
-		else{
-			left++;
-		}
-
-	}
-	return 0;
- 	       
-}
-
-bool checkqueenvalid(vector<int> cols, int rowin, int colin){
-	// cout << " checking valid " << endl;
-	// cout << rowin << endl;
-	// cout << colin << endl;
-	if(cols.size() == 0) {return true;}
-	for(int row = 0; row < rowin; row++){
-	//	cout << "entering loop " << endl;
-		int col1 = cols[row];
-		if(colin == col1) {return false;}
-
-		int coldistance = abs(col1 - colin);
-		int rowdistance = rowin - row;
-		if(coldistance == rowdistance) {return false;}
-	}
-	return true;
-}
-
-void placeQueens(int row, vector<int> &cols, vector<vector<int>> &resmat, int grid_size){
-	// cout << "row is: " << row << endl;
-
-	if(row == grid_size) {
-	//	cout << "inserting placement " << endl;
-		resmat.push_back(cols);
-	}
-	else{
-		for(int col = 0; col < grid_size; col++){
-			 // printvector(cols);
-			if(checkqueenvalid(cols, row, col)) {
-				cols[row] = col;
-				placeQueens(row + 1, cols, resmat, grid_size);
-			}
-		}
-	}
-}	
-
-void mat2chessboard(vector<vector<int>> resmat, vector<vector<string>> &chessboard){
-	
-	for(int i = 0; i < resmat.size(); i++){
-		vector<string> sol;
-		for(int j = 0; j < resmat[0].size(); j++){
-			string line (resmat[0].size(),'.');
-			line[resmat[i][j]] = 'Q';
-			// cout << line << endl;
-			sol.push_back(line);
-		}
-		chessboard.push_back(sol);
-		sol.clear();
-		
-	}
-}
-
-void printchessboard(vector<vector<string>> chessboard){
-	for(int i = 0; i < chessboard.size(); i++){
-		for(int j = 0; j < chessboard[0].size();j++){
-			cout << chessboard[i][j] << endl;
-		}
-		cout << endl;
-	}
-}
-
-vector<vector<string>> solveNQueens(int n) {
-//	string chessline (10,'.');
-
-
-	vector<vector<int>> resmat;
-	vector<int> cols (n,0);
-//	cout << chessline << endl;
-
-	placeQueens(0, cols, resmat, n);
-
-//	printmatrix(resmat);
-//	cout << chessline << endl;
-
-	vector<vector<string>> chessboard;
-	mat2chessboard(resmat,chessboard);
-	printchessboard(chessboard);
-	return chessboard;
-}
-
-string countAndSay(int n) {
-    string res;
-    if(n < 1) {return res;}
-    res = "1";
-    for(int i = 1; i < n; i++){
-    	string curr;
-    	int length = res.size();
-    	char l = res[0];
-    	int count = 1;
-    	for(int j = 1; j <= length; j++){
-    		if(res[j] == l) {count ++;}
-    		else{
-    			curr.push_back((char)(((int)'0')+count));
-    			curr.push_back(l);
-    			l = res[j]; 
-    			count = 1; }
-    	}
-    	res = curr;
-    	curr.clear();
-    //	cout << length << endl;
-    }
-    return res;
-}
-
-int minDistance(string word1, string word2) {
-    int length1 = word1.size();
-    int length2 = word2.size();
-    if(length1 == 0 && length2 == 0) {return 0;}
-    else if(length1 == 0){ return length2;}
-    else if(length2 == 0){ return length1;}
-    
-    vector<vector<int>> dist (length1+1, vector<int> (length2+1));
-
-    for(int i = 0; i <= length1; i++){dist[i][0] = i;}
-    for(int i = 0; i <= length2; i++){dist[0][i] = i;}
-
-    for(int i = 1; i <= length1; i++){
-    	for(int j = 1; j <= length2; j++){
-    		int insert1 = dist[i][j-1] + 1;
-    		int insert2 = dist[i-1][j] + 1;
-    		int replace = word1[i-1] == word2[j-1] ? dist[i-1][j-1] : (dist[i-1][j-1] + 1);
-    		//if(word1[i] == word2[j]) {
-
-    		//}
-    		//int replace = dist[i-1][j-1] + (word1[i] == word2[j]);
-    		dist[i][j] = min(insert1, min(insert2,replace));	
-    	}
-    }
-
-    return dist[length1][length2];
-
-}
-
-void connect1(TreeLinkNode *root){
-	if(!root) {return;}
-	TreeLinkNode *lasthead = root;
-	TreeLinkNode *currhead = NULL;
-	TreeLinkNode *prev = NULL;
-	while(lasthead != NULL){
-		TreeLinkNode *vqueue = lasthead;
-		// currhead = lasthead;
-		while(vqueue != NULL){
-			if(vqueue -> left) {
-				if(!currhead) {
-					currhead = vqueue -> left;
-					prev = currhead;
-				}
-				else{
-					prev -> next = vqueue -> left;
-					prev = prev -> next;
-				}
-			}
-
-			if(vqueue -> right) {
-				if(!currhead){
-					currhead = vqueue -> right;
-					prev = currhead;
-				}
-				else{
-					prev -> next = vqueue -> right;
-					prev = prev -> next;
-				}
-			}
-			vqueue = vqueue -> next;
-		}
-		lasthead = currhead;
-		currhead = NULL;
-	}	
-
-}
-void connect(TreeLinkNode *root) {
-	if(!root) {return;}
-	TreeLinkNode *lasthead = root;
-	TreeLinkNode *currhead = NULL;
-	TreeLinkNode *prev = NULL;
-	while(lasthead != NULL){
-		TreeLinkNode *vqueue = lasthead;
-		// currhead = lasthead;
-		while(vqueue != NULL){
-			if(vqueue -> left) {
-				if(!currhead) {
-					currhead = vqueue -> left;
-					prev = currhead;
-				}
-				else{
-					prev -> next = vqueue -> left;
-					prev = prev -> next;
-				}
-			}
-
-			if(vqueue -> right) {
-				if(!currhead){
-					currhead = vqueue -> right;
-					prev = currhead;
-				}
-				else{
-					prev -> next = vqueue -> right;
-					prev = prev -> next;
-				}
-			}
-			vqueue = vqueue -> next;
-		}
-		lasthead = currhead;
-		currhead = NULL;
-	}	
-}
-
-ListNode *partition(ListNode *head, int x) {
-	if(!head) return head;
-	ListNode *small = new ListNode (0);
-	ListNode *s = small;
-	ListNode *great = new ListNode (0);
-	ListNode *g = great;
-	ListNode *h = head;
-	while(h != NULL){
-		//cout << "partitioning one integer" << endl;
-		if(h -> val < x) {
-			s -> next = h; 
-			s = s -> next;
-		}
-		else {
-			g -> next = h;
-			g = g -> next;
-		}
-		h = h -> next;
-	}
-	g -> next = NULL;
-	s -> next = great -> next;
-	return small -> next;
-	// return small;
-}
-
-vector<vector<int>> generateMatrix(int n) {
-	vector<vector<int>> matr (n, vector<int> (n));
-	int count = 1;
-	int row = 0;
-	int col = 0;
-
-	for(int cycle = 0; cycle < n; cycle ++){
-
-		for(col = cycle; col < n - cycle; col ++){
-			matr[cycle][col] = count++; 
-		}
-		for(row = cycle+1; row < n - cycle; row ++){
-			matr[row][n - cycle -1] = count++;
-		}
-		for(col = n - cycle - 2; col >= cycle; col--){
-			matr[n - cycle - 1][col] = count++;
-		}
-		for(row = n - cycle - 2; row > cycle; row--){
-			matr[row][cycle] = count++;
-		}
-
-
-	}
-	return matr;
-}
-
-int minimumTotal(vector<vector<int> > &triangle) {
-	int level = triangle.size();
-	if(level == 0) {return 0;}
-	if(level == 1) {return triangle[0][0];}
-	for(int i = level-2; i >= 0; i--){
-		int length = triangle[i].size();
-		for(int j = 0; j < length; j++){
-			triangle[i][j] += min(triangle[i+1][j],triangle[i+1][j+1]);
-		}
-	}	
-	return triangle[0][0];    
-}
-
 TreeNode *ipreordertoTree(vector<int> &preorder, vector<int> &inorder, int instart, int inend, int prestart, int preend){
 	if(instart + 1 > inend || prestart + 1 > preend) {return NULL;}
 	TreeNode *root = new TreeNode(preorder[prestart]);
-	cout << "building node " << preorder[prestart] << endl;
+//	cout << "building node " << preorder[prestart] << endl;
 
 	int index = instart; 
 	while(inorder[index] != preorder[prestart]) {
@@ -391,8 +39,121 @@ TreeNode *buildTreeIPre(vector<int> &preorder, vector<int> &inorder) {
 	return ipreordertoTree(preorder, inorder, 0, length, 0, length);    
 }
 
-int main(int argc, char* argv[])
-{
+void combsumhelper(int k, vector<vector<int>> & res, vector<int> & arry, int start, vector<int> candidates){
+	if(k < 0) 
+		return;
+
+	else if(k == 0) {
+		res.push_back(arry);
+		return;
+	}
+	else{
+		for(int i = start; i < candidates.size(); i++){
+			if(i>0 && candidates[i]==candidates[i-1])  
+            	continue;  
+			arry.push_back(candidates[i]);
+			//combsumhelper(k - candidates[i],res,arry,i+1,candidates);
+			combsumhelper(k - candidates[i],res,arry,i,candidates);
+			arry.pop_back();
+		}
+	}
+}
+
+ vector<vector<int> > combinationSum(vector<int> &candidates, int target) {
+ 	vector<vector<int>> comres;
+ 	vector<int> arry;
+ 	sort(candidates.begin(),candidates.end());
+ 	combsumhelper(target,comres,arry,0,candidates);
+
+ 	return comres;      
+ }
+
+void combsum2helper(int k, vector<vector<int>> & res, vector<int> & arry, int start, vector<int> candidates){
+	if(k < 0) 
+		return;
+
+	else if(k == 0) {
+		res.push_back(arry);
+		return;
+	}
+	else{
+		for(int i = start; i < candidates.size(); i++){
+			if(i>0 && candidates[i]==candidates[i-1])  
+            	continue;  
+			arry.push_back(candidates[i]);
+			//combsumhelper(k - candidates[i],res,arry,i+1,candidates);
+			combsumhelper(k - candidates[i],res,arry,i,candidates);
+			arry.pop_back();
+		}
+	}
+}
+
+ vector<vector<int> > combinationSum2(vector<int> &candidates, int target) {
+ 	vector<vector<int>> comres;
+ 	vector<int> arry;
+ 	sort(candidates.begin(),candidates.end());
+ 	combsum2helper(target,comres,arry,0,candidates);
+
+ 	return comres;      
+ }
+string addBinary(string a, string b) {
+	int alen = a.size();
+	int blen = b.size();
+	int carry = 0;
+	string res = "";
+	int maxlen = max(alen,blen);
+	for(int i = 0; i < maxlen; i++){
+		int ac = i < alen ? a[alen - 1 - i] - '0' : 0;
+		int bc = i < blen ? b[blen - 1 - i] - '0' : 0;
+		int sum = ac + bc + carry;
+		carry = sum / 2;
+		res = to_string(sum % 2) + res;
+	}
+
+	return (carry == 0) ? res : "1" + res ;
+
+}
+
+
+string addDaShu(string a, string b){
+    string res = "";
+    int alen = a.size();
+    int blen = b.size();
+    int carry = 0;
+    int maxlen = max(alen, blen);
+    for(int i = 0; i < maxlen; i++){
+        int ac = i < alen ? a[alen - i - 1] - '0' : 0;
+        int bc = i < blen ? b[blen - i - 1] - '0' : 0;
+        int sum = ac + bc + carry;
+        carry = sum / 10;
+        res = to_string(sum % 10) + res;
+    }
+    return carry == 0 ? res : "1" + res;
+    
+}
+
+
+string shortestseq(string chars, string set){
+	string res;
+
+
+	return res;
+
+}
+
+
+
+int main(int argc, char* argv[]){
+
+	string badda = "1001";
+	string baddb = "101";
+	string dashusum = addDaShu(badda,baddb);
+	cout << badda << " + " << baddb << " = " << dashusum << endl;
+
+	string baddsum = addBinary(badda,baddb);
+	cout << badda << " + " << baddb << " = " << baddsum << endl;
+
+
 	vector<int> postorder = {1,3,5,4,2,8,9,7,6};
 	vector<int> preorder = {6,2,1,4,3,5,7,9,8};
 	vector<int> inorder = {1,2,3,4,5,6,7,8,9};
@@ -481,8 +242,14 @@ int main(int argc, char* argv[])
 
 //	vector<vector<int>> levels = levelOrderBottom(Node_A);
 //	printmatrix(levels);
-	//vector<vector<int>> comb42 = combine(4,3);
-	//printmatrix(comb42);
+	vector<int> candidates = {2,2,3,7};
+	vector<vector<int>> comb42 = combinationSum(candidates, 7);
+
+	cout << "combination sum result: " << endl;
+	printmatrix(comb42);
+
+	cout << endl << endl;
+
 	cout << minDepth(Node_A) << endl;
 	vector<vector<int>> pathsum1 =  pathSum(Node_A, 12);
 	printmatrix(pathsum1);
@@ -491,6 +258,8 @@ int main(int argc, char* argv[])
 
 	char hello[] = "i have a dick";
 	int count = lengthOfLastWord(hello);
+
+	
 
 
 
