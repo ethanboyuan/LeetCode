@@ -1,20 +1,6 @@
 // btree_max_depth.cpp : Defines the entry point for the console application.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <algorithm>
-#include <queue>
-#include <stack>
-#include <cmath>
-#include <unordered_set>
-#include "my_leetcode.h"
-
-using namespace std;
 
 TreeNode *ipreordertoTree(vector<int> &preorder, vector<int> &inorder, int instart, int inend, int prestart, int preend){
 	if(instart + 1 > inend || prestart + 1 > preend) {return NULL;}
@@ -78,11 +64,11 @@ void combsum2helper(int k, vector<vector<int>> & res, vector<int> & arry, int st
 	}
 	else{
 		for(int i = start; i < candidates.size(); i++){
-			if(i>0 && candidates[i]==candidates[i-1])  
-            	continue;  
+		     if(i> start && candidates[i]==candidates[i-1])  
+             	 continue;  
 			arry.push_back(candidates[i]);
 			//combsumhelper(k - candidates[i],res,arry,i+1,candidates);
-			combsumhelper(k - candidates[i],res,arry,i,candidates);
+			combsum2helper(k - candidates[i],res,arry,i+1,candidates);
 			arry.pop_back();
 		}
 	}
@@ -242,8 +228,8 @@ int main(int argc, char* argv[]){
 
 //	vector<vector<int>> levels = levelOrderBottom(Node_A);
 //	printmatrix(levels);
-	vector<int> candidates = {2,2,3,7};
-	vector<vector<int>> comb42 = combinationSum(candidates, 7);
+	vector<int> candidates = {10,1,2,7,6,1,5};
+	vector<vector<int>> comb42 = combinationSum2(candidates, 8);
 
 	cout << "combination sum result: " << endl;
 	printmatrix(comb42);
