@@ -2,7 +2,6 @@
 #include <iostream>
 #include <queue>
 #include <stack>
-//#include <thread>
 
 using namespace std;
 
@@ -13,58 +12,39 @@ struct ListNode {
 };
 
 class Solution {
+private:
+	struct cmp{
+		bool operator()(const ListNode*l1, const ListNode*l2){
+			return l1 ->val > l2 -> val;
+		}
+	};
 public:
-    ListNode *mergeTwoLists(ListNode *l1, ListNode *l2) {
-      if(!l1) return l2;
-      else if(!l2) return l1;
-      else if(!l1 && !l2) return NULL;
-
-      ListNode *dummy = new ListNode(-1);
-      ListNode *curr = dummy;
-      while(l1 != NULL && l2 != NULL){
-        if(l1 -> val < l2 -> val){
-            curr -> next = l1; 
-            l1 = l1 -> next;
-        }
-        else{
-          curr -> next = l2;
-          l2 = l2 -> next;
-        }
-          curr = curr -> next;
-      }
-
-      if(l1 != NULL){
-        curr -> next = l1;
-      }
-      else{
-        curr -> next = l2;
-      }
-
-      return dummy -> next;
-
-    }
-
-    ListNode *mergeHelper(vector<ListNode *> &lists, int l, int r){
-      if(l == r){
-     //   cout << l << endl;
-        return lists[l];
-      }
-
-      int m = l + (r - l)/2;
-      ListNode *left = mergeHelper(lists, l, m);
-      ListNode *right = mergeHelper(lists, m+1, r);
-      return mergeTwoLists(left, right);
-    }
-
+	
     ListNode *mergeKLists(vector<ListNode *> &lists) {
-  		int k = lists.size();
-  		if(k == 0) 
-  			return NULL;
-  		if(k == 1)
-  			return lists[0];
-      return mergeHelper(lists, 0, k-1);
+    	int n = lists.size();
+    	if(n == 0) return NULL;
+    	ListNode node(0), *res = &node;
+    	priority_queue<ListNode*, vector<ListNode*>, cmp> que;
 
-    }
+    	for(int i = 0; i< n; i++){
+    		if(lists[i]) 
+    			que.push(lists[i]);
+    	}
+
+    	while(!que.empty()){
+
+    		ListNode*p = que.top();
+    		que.pop();
+
+    		res -> next = p;
+    		res = p;
+
+    		if(p -> next)
+    			que.push(p->next);
+
+    	}
+    	return node.next;
+	}
 };
 
 ListNode* Array2List(vector<int> arry){
@@ -94,8 +74,7 @@ void printList(ListNode *root){
 }
 
 int main(int argc, char* argv[]){
-   // cout << main.get_id() <<endl;
-	 Solution sol;
+	Solution sol;
    // cout << std::thread::hardware_concurrency() << endl;
    //cout << get_id(main) << endl;
    vector<int> arry1 = {1,2,3,4,5};
@@ -116,9 +95,9 @@ int main(int argc, char* argv[]){
    v1.push_back(l3);
    v1.push_back(l4);
 
-   //ListNode *l3 = NULL;
    ListNode *Res = sol.mergeKLists(v1);
 
    printList(Res);
-	 return 0;	
+
+	return 0;
 }
