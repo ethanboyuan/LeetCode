@@ -14,10 +14,30 @@ struct TreeNode {
 
 class Solution {
 public:
+	vector<TreeNode *> TreeGenHelper(int l, int r){
+		vector<TreeNode*> subTree;
+		if(l > r){
+			subTree.push_back(NULL);
+			return subTree;
+		}
+		for(int i = l; i <= r; i ++){
+			vector<TreeNode*> leftSub = TreeGenHelper(l, i-1);
+			vector<TreeNode*> rightSub = TreeGenHelper(i+1, r);
+			for(int j = 0; j < leftSub.size(); j++){
+				for(int k = 0; k < rightSub.size(); k++){
+					TreeNode * node = new TreeNode(i);
+					node -> left = leftSub[j];
+					node -> right = rightSub[k];
+					subTree.push_back(node);
+				}
+			}
+		}
+		return subTree;
+	}
+
     vector<TreeNode *> generateTrees(int n) {
-  		vector<TreeNode *> res;
-  		if(n == 0) return res;
-  		return res;      
+
+  		return TreeGenHelper(1,n);      
     }
 };
 
