@@ -1193,7 +1193,7 @@ vector<vector<int> > levelOrderBottom(TreeNode *root) {
 	return resrev;   
 }
 
-ListNode *removeNthFromEnd(ListNode *head, int n) {
+ListNode *NthFromEnd(ListNode *head, int n) {
     if(!head) {return NULL;}
     ListNode *dummyhead = new ListNode(0);
     dummyhead -> next = head;

@@ -55,6 +55,7 @@ void printList(ListNode *root){
   cout << endl;
   return ;
 }
+
 int main(int argc, char* argv[]){
 
 	Solution sol;
